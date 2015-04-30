@@ -25,9 +25,16 @@ describe('container', function () {
     //--------------------------------------------------------------------------
 
     it('create - should create an instance of type', function () {
-        var result = container.create(NoParameterConstructor);
+        var result = container.create(NoParamConstructor);
 
-        assert.instanceOf(result, NoParameterConstructor);
+        assert.instanceOf(result, NoParamConstructor);
+    });
+
+    it('create - should resolve one param constructor', function () {
+        var result = container.create(OneParamConstructor);
+
+        assert.instanceOf(result, OneParamConstructor);
+        assert.instanceOf(result.param, NoParamConstructor);
     });
 
     //--------------------------------------------------------------------------
@@ -35,14 +42,14 @@ describe('container', function () {
     //--------------------------------------------------------------------------
 
     it('get - should create an instance of type', function () {
-        var result = container.get(NoParameterConstructor);
+        var result = container.get(NoParamConstructor);
 
-        assert.instanceOf(result, NoParameterConstructor);
+        assert.instanceOf(result, NoParamConstructor);
     });
 
     it('get - should return same instance', function () {
-        var result1 = container.get(NoParameterConstructor);
-        var result2 = container.get(NoParameterConstructor);
+        var result1 = container.get(NoParamConstructor);
+        var result2 = container.get(NoParamConstructor);
 
         assert.strictEqual(result2, result1);
     });
@@ -52,21 +59,21 @@ describe('container', function () {
     //--------------------------------------------------------------------------
 
     it('has - should return false if no stored value', function () {
-        var result = container.has(NoParameterConstructor);
+        var result = container.has(NoParamConstructor);
 
         assert.isFalse(result);
     });
 
     it('has - should return true if stored instance', function () {
-        container.get(NoParameterConstructor);
-        var result = container.has(NoParameterConstructor);
+        container.get(NoParamConstructor);
+        var result = container.has(NoParamConstructor);
 
         assert.isTrue(result);
     });
 
     it('has - should return true if stored mapping', function () {
-        container.mapInstance(NoParameterConstructor, new NoParameterConstructor());
-        var result = container.has(NoParameterConstructor);
+        container.mapInstance(NoParamConstructor, new NoParamConstructor());
+        var result = container.has(NoParamConstructor);
 
         assert.isTrue(result);
     });
@@ -79,13 +86,13 @@ describe('container', function () {
         var called = false;
         var factory = function () {
             called = true;
-            return new NoParameterConstructor();
+            return new NoParamConstructor();
         };
-        container.mapFactory(NoParameterConstructor, factory);
-        var result = container.get(NoParameterConstructor);
+        container.mapFactory(NoParamConstructor, factory);
+        var result = container.get(NoParamConstructor);
 
         assert.isTrue(called);
-        assert.instanceOf(result, NoParameterConstructor);
+        assert.instanceOf(result, NoParamConstructor);
     });
 
     //--------------------------------------------------------------------------
@@ -93,9 +100,9 @@ describe('container', function () {
     //--------------------------------------------------------------------------
 
     it('mapInstance - should store specific instance', function () {
-        var instance = new NoParameterConstructor();
-        container.mapInstance(NoParameterConstructor, instance);
-        var result = container.get(NoParameterConstructor);
+        var instance = new NoParamConstructor();
+        container.mapInstance(NoParamConstructor, instance);
+        var result = container.get(NoParamConstructor);
 
         assert.strictEqual(result, instance);
     });
@@ -105,10 +112,10 @@ describe('container', function () {
     //--------------------------------------------------------------------------
 
     it('mapType - should map type to subType', function () {
-        container.mapType(Base, NoParameterConstructor);
+        container.mapType(Base, NoParamConstructor);
         var result = container.get(Base);
 
-        assert.instanceOf(result, NoParameterConstructor);
+        assert.instanceOf(result, NoParamConstructor);
     });
 
     //--------------------------------------------------------------------------
@@ -116,17 +123,17 @@ describe('container', function () {
     //--------------------------------------------------------------------------
 
     it('remove - should remove the stored instance', function () {
-        container.get(NoParameterConstructor);
-        container.remove(NoParameterConstructor);
-        var result = container.has(NoParameterConstructor);
+        container.get(NoParamConstructor);
+        container.remove(NoParamConstructor);
+        var result = container.has(NoParamConstructor);
 
         assert.isFalse(result);
     });
 
     it('remove - should remove the stored mapping', function () {
-        container.mapInstance(NoParameterConstructor, new NoParameterConstructor());
-        container.remove(NoParameterConstructor);
-        var result = container.has(NoParameterConstructor);
+        container.mapInstance(NoParamConstructor, new NoParamConstructor());
+        container.remove(NoParamConstructor);
+        var result = container.has(NoParamConstructor);
 
         assert.isFalse(result);
     });
@@ -136,11 +143,11 @@ describe('container', function () {
     //--------------------------------------------------------------------------
 
     it('reset - should remove all stored values', function () {
-        container.get(NoParameterConstructor);
-        container.mapType(Base, NoParameterConstructor);
+        container.get(NoParamConstructor);
+        container.mapType(Base, NoParamConstructor);
         container.reset();
 
-        var result1 = container.has(NoParameterConstructor);
+        var result1 = container.has(NoParamConstructor);
         var result2 = container.has(Base);
 
         assert.isFalse(result1);
@@ -153,10 +160,17 @@ describe('container', function () {
 // FIXTURES
 //------------------------------------------------------------------------------
 
+// base class to test subclassing
 function Base() {
 }
 
-function NoParameterConstructor() {
+// class with a constructor without parameters
+function NoParamConstructor() {
 }
-NoParameterConstructor.prototype = Object.create(Base.prototype);
-NoParameterConstructor.prototype.constructor = NoParameterConstructor;
+NoParamConstructor.prototype = Object.create(Base.prototype);
+NoParamConstructor.prototype.constructor = NoParamConstructor;
+
+// class with a constructor that has one parameter
+function OneParamConstructor(NoParamConstructor) {
+    this.param = NoParamConstructor;
+}
