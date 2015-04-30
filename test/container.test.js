@@ -65,6 +65,46 @@ describe('container', function () {
     });
 
     //--------------------------------------------------------------------------
+    // MAP FACTORY
+    //--------------------------------------------------------------------------
+
+    it('mapFactory - should use factory to create instance', function () {
+        var called = false;
+        var factory = function () {
+            called = true;
+            return new NoParameterConstructor();
+        };
+        container.mapFactory(NoParameterConstructor, factory);
+        var result = container.get(NoParameterConstructor);
+
+        assert.isTrue(called);
+        assert.instanceOf(result, NoParameterConstructor);
+    });
+
+    //--------------------------------------------------------------------------
+    // MAP INSTANCE
+    //--------------------------------------------------------------------------
+
+    it('mapInstance - should store specific instance', function () {
+        var instance = new NoParameterConstructor();
+        container.mapInstance(NoParameterConstructor, instance);
+        var result = container.get(NoParameterConstructor);
+
+        assert.strictEqual(result, instance);
+    });
+
+    //--------------------------------------------------------------------------
+    // MAP TYPE
+    //--------------------------------------------------------------------------
+
+    it('mapType - should map type to subType', function () {
+        container.mapType(Base, NoParameterConstructor);
+        var result = container.get(Base);
+
+        assert.instanceOf(result, NoParameterConstructor);
+    });
+
+    //--------------------------------------------------------------------------
     // REMOVE
     //--------------------------------------------------------------------------
 
@@ -95,5 +135,10 @@ describe('container', function () {
 // FIXTURES
 //------------------------------------------------------------------------------
 
+function Base() {
+}
+
 function NoParameterConstructor() {
 }
+NoParameterConstructor.prototype = Object.create(Base.prototype);
+NoParameterConstructor.prototype.constructor = NoParameterConstructor;
