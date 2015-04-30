@@ -51,14 +51,21 @@ describe('container', function () {
     // HAS
     //--------------------------------------------------------------------------
 
-    it('has - should return false if no value', function () {
+    it('has - should return false if no stored value', function () {
         var result = container.has(NoParameterConstructor);
 
         assert.isFalse(result);
     });
 
-    it('has - should return false if no value', function () {
+    it('has - should return true if stored instance', function () {
         container.get(NoParameterConstructor);
+        var result = container.has(NoParameterConstructor);
+
+        assert.isTrue(result);
+    });
+
+    it('has - should return true if stored mapping', function () {
+        container.mapInstance(NoParameterConstructor, new NoParameterConstructor());
         var result = container.has(NoParameterConstructor);
 
         assert.isTrue(result);
@@ -116,17 +123,28 @@ describe('container', function () {
         assert.isFalse(result);
     });
 
+    it('remove - should remove the stored mapping', function () {
+        container.mapInstance(NoParameterConstructor, new NoParameterConstructor());
+        container.remove(NoParameterConstructor);
+        var result = container.has(NoParameterConstructor);
+
+        assert.isFalse(result);
+    });
+
     //--------------------------------------------------------------------------
     // RESET
     //--------------------------------------------------------------------------
 
     it('reset - should remove all stored values', function () {
         container.get(NoParameterConstructor);
+        container.mapType(Base, NoParameterConstructor);
         container.reset();
 
-        var result = container.has(NoParameterConstructor);
+        var result1 = container.has(NoParameterConstructor);
+        var result2 = container.has(Base);
 
-        assert.isFalse(result);
+        assert.isFalse(result1);
+        assert.isFalse(result2);
     });
 
 });
