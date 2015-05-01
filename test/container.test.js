@@ -82,6 +82,28 @@ describe('container', function () {
     // MAP FACTORY
     //--------------------------------------------------------------------------
 
+    it('mapFactory - should throw if a mapping for type already exists', function () {
+        container.get(NoParamConstructor);
+        var factory = function () {
+            return new NoParamConstructor();
+        };
+        var test = function () {
+            container.mapFactory(NoParamConstructor, factory);
+        };
+
+        // @todo Use custom error
+        assert.throws(test, Error);
+    });
+
+    it('mapFactory - should throw if factory not a function', function () {
+        var test = function () {
+            container.mapFactory(NoParamConstructor, 123);
+        };
+
+        // @todo Use custom error
+        assert.throws(test, Error);
+    });
+
     it('mapFactory - should use factory to create instance', function () {
         var called = false;
         var factory = function () {
@@ -99,6 +121,25 @@ describe('container', function () {
     // MAP INSTANCE
     //--------------------------------------------------------------------------
 
+    it('mapInstance - should throw if a mapping for type already exists', function () {
+        container.get(NoParamConstructor);
+        var test = function () {
+            container.mapInstance(NoParamConstructor, new NoParamConstructor());
+        };
+
+        // @todo Use custom error
+        assert.throws(test, Error);
+    });
+
+    it('mapInstance - should throw if not an instance of type', function () {
+        var test = function () {
+            container.mapInstance(NoParamConstructor, {});
+        };
+
+        // @todo Use custom error
+        assert.throws(test, Error);
+    });
+
     it('mapInstance - should store specific instance', function () {
         var instance = new NoParamConstructor();
         container.mapInstance(NoParamConstructor, instance);
@@ -110,6 +151,25 @@ describe('container', function () {
     //--------------------------------------------------------------------------
     // MAP TYPE
     //--------------------------------------------------------------------------
+
+    it('mapType - should throw if a mapping for type already exists', function () {
+        container.get(Base);
+        var test = function () {
+            container.mapType(Base, NoParamConstructor);
+        };
+
+        // @todo Use custom error
+        assert.throws(test, Error);
+    });
+
+    it('mapType - should throw if subType does not extend type', function () {
+        var test = function () {
+            container.mapType(Base, Object);
+        };
+
+        // @todo Use custom error
+        assert.throws(test, Error);
+    });
 
     it('mapType - should map type to subType', function () {
         container.mapType(Base, NoParamConstructor);
