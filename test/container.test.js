@@ -1,4 +1,4 @@
-/* global assert, Container */
+"use strict";
 
 describe('container', function () {
 
@@ -46,8 +46,7 @@ describe('container', function () {
             _container.get(CircularSelf);
         };
 
-        // @todo Use custom error
-        assert.throws(test, Error);
+        assert.throws(test, ContainerError);
     });
 
     it('get - should throw if simple A > B > A circular dependency', function () {
@@ -55,8 +54,7 @@ describe('container', function () {
             _container.get(CircularSimpleA);
         };
 
-        // @todo Use custom error
-        assert.throws(test, Error);
+        assert.throws(test, ContainerError);
     });
 
     it('get - should throw if complex circular dependency with mappings', function () {
@@ -68,8 +66,7 @@ describe('container', function () {
             _container.get(CircularComplexA);
         };
 
-        // @todo Use custom error
-        assert.throws(test, Error);
+        assert.throws(test, ContainerError);
     });
 
     it('get - should create an instance of type', function () {
@@ -122,8 +119,7 @@ describe('container', function () {
             _container.mapFactory(NoParamConstructor, factory);
         };
 
-        // @todo Use custom error
-        assert.throws(test, Error);
+        assert.throws(test, ContainerError);
     });
 
     it('mapFactory - should throw if factory not a function', function () {
@@ -131,8 +127,7 @@ describe('container', function () {
             _container.mapFactory(NoParamConstructor, 123);
         };
 
-        // @todo Use custom error
-        assert.throws(test, Error);
+        assert.throws(test, ContainerError);
     });
 
     it('mapFactory - should use factory to create instance', function () {
@@ -169,8 +164,7 @@ describe('container', function () {
             _container.mapInstance(NoParamConstructor, new NoParamConstructor());
         };
 
-        // @todo Use custom error
-        assert.throws(test, Error);
+        assert.throws(test, ContainerError);
     });
 
     it('mapInstance - should throw if not an instance of type', function () {
@@ -178,8 +172,7 @@ describe('container', function () {
             _container.mapInstance(NoParamConstructor, {});
         };
 
-        // @todo Use custom error
-        assert.throws(test, Error);
+        assert.throws(test, ContainerError);
     });
 
     it('mapInstance - should store specific instance', function () {
@@ -200,8 +193,7 @@ describe('container', function () {
             _container.mapType(Base, NoParamConstructor);
         };
 
-        // @todo Use custom error
-        assert.throws(test, Error);
+        assert.throws(test, ContainerError);
     });
 
     it('mapType - should throw if subType does not extend type', function () {
@@ -209,8 +201,7 @@ describe('container', function () {
             _container.mapType(Base, Object);
         };
 
-        // @todo Use custom error
-        assert.throws(test, Error);
+        assert.throws(test, ContainerError);
     });
 
     it('mapType - should map type to subType', function () {
