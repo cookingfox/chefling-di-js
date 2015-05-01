@@ -1,4 +1,4 @@
-/* global assert, ContainerError */
+/* global assert, Container, ContainerError */
 
 "use strict";
 
@@ -247,6 +247,17 @@ describe('container', function () {
 
         assert.isFalse(result1);
         assert.isFalse(result2);
+    });
+
+    //--------------------------------------------------------------------------
+    // GET DEFAULT
+    //--------------------------------------------------------------------------
+
+    it('getDefault - should return same instance', function () {
+        var result1 = Container.getDefault();
+        var result2 = Container.getDefault();
+
+        assert.strictEqual(result1, result2);
     });
 
 });
