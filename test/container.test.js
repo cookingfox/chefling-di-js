@@ -6,18 +6,18 @@ describe('container', function () {
     // SUITE
     //--------------------------------------------------------------------------
 
-    var container = null;
+    var _container = null;
 
     beforeEach(function () {
-        container = new Container();
+        _container = new Container();
     });
 
     afterEach(function () {
-        container = null;
+        _container = null;
     });
 
     it('suite - should initialize the container', function () {
-        assert.instanceOf(container, Container);
+        assert.instanceOf(_container, Container);
     });
 
     //--------------------------------------------------------------------------
@@ -25,13 +25,13 @@ describe('container', function () {
     //--------------------------------------------------------------------------
 
     it('create - should create an instance of type', function () {
-        var result = container.create(NoParamConstructor);
+        var result = _container.create(NoParamConstructor);
 
         assert.instanceOf(result, NoParamConstructor);
     });
 
     it('create - should resolve one param constructor', function () {
-        var result = container.create(OneParamConstructor);
+        var result = _container.create(OneParamConstructor);
 
         assert.instanceOf(result, OneParamConstructor);
         assert.instanceOf(result.param, NoParamConstructor);
@@ -41,15 +41,46 @@ describe('container', function () {
     // GET
     //--------------------------------------------------------------------------
 
+    it('get - should throw if circular dependency on self', function () {
+        var test = function () {
+            _container.get(CircularSelf);
+        };
+
+        // @todo Use custom error
+        assert.throws(test, Error);
+    });
+
+    it('get - should throw if simple A > B > A circular dependency', function () {
+        var test = function () {
+            _container.get(CircularSimpleA);
+        };
+
+        // @todo Use custom error
+        assert.throws(test, Error);
+    });
+
+    it('get - should throw if complex circular dependency with mappings', function () {
+        _container.mapType(CircularComplexBase, CircularComplexB);
+        _container.mapFactory(CircularComplexC, function (container) {
+            return new CircularComplexC(container.get(CircularComplexA));
+        });
+        var test = function () {
+            _container.get(CircularComplexA);
+        };
+
+        // @todo Use custom error
+        assert.throws(test, Error);
+    });
+
     it('get - should create an instance of type', function () {
-        var result = container.get(NoParamConstructor);
+        var result = _container.get(NoParamConstructor);
 
         assert.instanceOf(result, NoParamConstructor);
     });
 
     it('get - should return same instance', function () {
-        var result1 = container.get(NoParamConstructor);
-        var result2 = container.get(NoParamConstructor);
+        var result1 = _container.get(NoParamConstructor);
+        var result2 = _container.get(NoParamConstructor);
 
         assert.strictEqual(result2, result1);
     });
@@ -59,21 +90,21 @@ describe('container', function () {
     //--------------------------------------------------------------------------
 
     it('has - should return false if no stored value', function () {
-        var result = container.has(NoParamConstructor);
+        var result = _container.has(NoParamConstructor);
 
         assert.isFalse(result);
     });
 
     it('has - should return true if stored instance', function () {
-        container.get(NoParamConstructor);
-        var result = container.has(NoParamConstructor);
+        _container.get(NoParamConstructor);
+        var result = _container.has(NoParamConstructor);
 
         assert.isTrue(result);
     });
 
     it('has - should return true if stored mapping', function () {
-        container.mapInstance(NoParamConstructor, new NoParamConstructor());
-        var result = container.has(NoParamConstructor);
+        _container.mapInstance(NoParamConstructor, new NoParamConstructor());
+        var result = _container.has(NoParamConstructor);
 
         assert.isTrue(result);
     });
@@ -83,12 +114,12 @@ describe('container', function () {
     //--------------------------------------------------------------------------
 
     it('mapFactory - should throw if a mapping for type already exists', function () {
-        container.get(NoParamConstructor);
+        _container.get(NoParamConstructor);
         var factory = function () {
             return new NoParamConstructor();
         };
         var test = function () {
-            container.mapFactory(NoParamConstructor, factory);
+            _container.mapFactory(NoParamConstructor, factory);
         };
 
         // @todo Use custom error
@@ -97,7 +128,7 @@ describe('container', function () {
 
     it('mapFactory - should throw if factory not a function', function () {
         var test = function () {
-            container.mapFactory(NoParamConstructor, 123);
+            _container.mapFactory(NoParamConstructor, 123);
         };
 
         // @todo Use custom error
@@ -110,11 +141,22 @@ describe('container', function () {
             called = true;
             return new NoParamConstructor();
         };
-        container.mapFactory(NoParamConstructor, factory);
-        var result = container.get(NoParamConstructor);
+        _container.mapFactory(NoParamConstructor, factory);
+        var result = _container.get(NoParamConstructor);
 
         assert.isTrue(called);
         assert.instanceOf(result, NoParamConstructor);
+    });
+
+    it('mapFactory - should receive Container instance', function () {
+        var c = null;
+        var factory = function (container) {
+            c = container;
+        };
+        _container.mapFactory(NoParamConstructor, factory);
+        _container.get(NoParamConstructor);
+
+        assert.strictEqual(c, _container);
     });
 
     //--------------------------------------------------------------------------
@@ -122,9 +164,9 @@ describe('container', function () {
     //--------------------------------------------------------------------------
 
     it('mapInstance - should throw if a mapping for type already exists', function () {
-        container.get(NoParamConstructor);
+        _container.get(NoParamConstructor);
         var test = function () {
-            container.mapInstance(NoParamConstructor, new NoParamConstructor());
+            _container.mapInstance(NoParamConstructor, new NoParamConstructor());
         };
 
         // @todo Use custom error
@@ -133,7 +175,7 @@ describe('container', function () {
 
     it('mapInstance - should throw if not an instance of type', function () {
         var test = function () {
-            container.mapInstance(NoParamConstructor, {});
+            _container.mapInstance(NoParamConstructor, {});
         };
 
         // @todo Use custom error
@@ -142,8 +184,8 @@ describe('container', function () {
 
     it('mapInstance - should store specific instance', function () {
         var instance = new NoParamConstructor();
-        container.mapInstance(NoParamConstructor, instance);
-        var result = container.get(NoParamConstructor);
+        _container.mapInstance(NoParamConstructor, instance);
+        var result = _container.get(NoParamConstructor);
 
         assert.strictEqual(result, instance);
     });
@@ -153,9 +195,9 @@ describe('container', function () {
     //--------------------------------------------------------------------------
 
     it('mapType - should throw if a mapping for type already exists', function () {
-        container.get(Base);
+        _container.get(Base);
         var test = function () {
-            container.mapType(Base, NoParamConstructor);
+            _container.mapType(Base, NoParamConstructor);
         };
 
         // @todo Use custom error
@@ -164,7 +206,7 @@ describe('container', function () {
 
     it('mapType - should throw if subType does not extend type', function () {
         var test = function () {
-            container.mapType(Base, Object);
+            _container.mapType(Base, Object);
         };
 
         // @todo Use custom error
@@ -172,8 +214,8 @@ describe('container', function () {
     });
 
     it('mapType - should map type to subType', function () {
-        container.mapType(Base, NoParamConstructor);
-        var result = container.get(Base);
+        _container.mapType(Base, NoParamConstructor);
+        var result = _container.get(Base);
 
         assert.instanceOf(result, NoParamConstructor);
     });
@@ -183,17 +225,17 @@ describe('container', function () {
     //--------------------------------------------------------------------------
 
     it('remove - should remove the stored instance', function () {
-        container.get(NoParamConstructor);
-        container.remove(NoParamConstructor);
-        var result = container.has(NoParamConstructor);
+        _container.get(NoParamConstructor);
+        _container.remove(NoParamConstructor);
+        var result = _container.has(NoParamConstructor);
 
         assert.isFalse(result);
     });
 
     it('remove - should remove the stored mapping', function () {
-        container.mapInstance(NoParamConstructor, new NoParamConstructor());
-        container.remove(NoParamConstructor);
-        var result = container.has(NoParamConstructor);
+        _container.mapInstance(NoParamConstructor, new NoParamConstructor());
+        _container.remove(NoParamConstructor);
+        var result = _container.has(NoParamConstructor);
 
         assert.isFalse(result);
     });
@@ -203,12 +245,12 @@ describe('container', function () {
     //--------------------------------------------------------------------------
 
     it('reset - should remove all stored values', function () {
-        container.get(NoParamConstructor);
-        container.mapType(Base, NoParamConstructor);
-        container.reset();
+        _container.get(NoParamConstructor);
+        _container.mapType(Base, NoParamConstructor);
+        _container.reset();
 
-        var result1 = container.has(NoParamConstructor);
-        var result2 = container.has(Base);
+        var result1 = _container.has(NoParamConstructor);
+        var result2 = _container.has(Base);
 
         assert.isFalse(result1);
         assert.isFalse(result2);
@@ -233,4 +275,25 @@ NoParamConstructor.prototype.constructor = NoParamConstructor;
 // class with a constructor that has one parameter
 function OneParamConstructor(NoParamConstructor) {
     this.param = NoParamConstructor;
+}
+
+// class with a circular dependency on itself
+function CircularSelf(CircularSelf) {
+}
+
+// classes that have a circular dependency on each other
+function CircularSimpleA(CircularSimpleB) {
+}
+function CircularSimpleB(CircularSimpleA) {
+}
+
+// classes that have a more complex circular dependency
+function CircularComplexBase() {
+}
+function CircularComplexA(CircularComplexBase) {
+}
+function CircularComplexB(CircularComplexC) {
+}
+CircularComplexB.prototype = Object.create(CircularComplexBase.prototype);
+function CircularComplexC(CircularComplexA) {
 }
