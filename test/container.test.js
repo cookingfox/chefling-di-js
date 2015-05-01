@@ -1,3 +1,5 @@
+/* global assert, ContainerError */
+
 "use strict";
 
 describe('container', function () {
