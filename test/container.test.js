@@ -120,6 +120,12 @@ describe('container', function () {
         assert.strictEqual(result2, result1);
     });
 
+    it('get - container should return container', function () {
+        var result = _container.get(Container);
+
+        assert.strictEqual(result, _container);
+    });
+
     it('get - should return complex mapped types as expected', function () {
         _container.mapType(D, E);
         _container.mapType(C, D);
@@ -347,6 +353,14 @@ describe('container', function () {
     // REMOVE
     //--------------------------------------------------------------------------
 
+    it('remove - should throw if container', function () {
+        var test = function () {
+            _container.remove(Container);
+        };
+
+        assert.throws(test, ContainerError);
+    });
+
     it('remove - should remove the stored instance', function () {
         _container.get(NoParamConstructor);
         _container.remove(NoParamConstructor);
@@ -383,8 +397,6 @@ describe('container', function () {
         _container.mapType(B, C);
         _container.mapType(A, B);
 
-        console.log('--------------------------------------------------------');
-
         _container.remove(D);
 
         assert.isFalse(_container.has(D), 'NOT has D');
@@ -407,6 +419,14 @@ describe('container', function () {
 
         assert.isFalse(result1);
         assert.isFalse(result2);
+    });
+
+    it('reset - should re-initialize container', function () {
+        _container.reset();
+
+        var result = _container.get(Container);
+
+        assert.strictEqual(result, _container);
     });
 
     //--------------------------------------------------------------------------
@@ -435,6 +455,7 @@ describe('container', function () {
             new Object(),
             Function,
             Error,
+            new Error,
             ContainerError
         ];
     }
