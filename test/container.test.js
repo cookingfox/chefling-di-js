@@ -27,13 +27,13 @@ describe('container', function () {
     //--------------------------------------------------------------------------
 
     it('create - should throw if type invalid', function () {
-        var invalid = [null, undefined, true, 123, 'abc', [], {}, ContainerError, Function];
+        var invalid = getInvalidTypes();
 
         for (var i = 0; i < invalid.length; i++) {
-            var value = invalid[i];
+            var type = invalid[i];
             var test = function () {
                 try {
-                    _container.create(value);
+                    _container.create(type);
                 } catch (e) {
                     assert.match(e.message, /Type \[[\w ]+\] is invalid, because it/i);
                     throw e;
@@ -60,6 +60,24 @@ describe('container', function () {
     //--------------------------------------------------------------------------
     // GET
     //--------------------------------------------------------------------------
+
+    it('get - should throw if type invalid', function () {
+        var invalid = getInvalidTypes();
+
+        for (var i = 0; i < invalid.length; i++) {
+            var type = invalid[i];
+            var test = function () {
+                try {
+                    _container.get(type);
+                } catch (e) {
+                    assert.match(e.message, /Type \[[\w ]+\] is invalid, because it/i);
+                    throw e;
+                }
+            };
+
+            assert.throws(test, ContainerError);
+        }
+    });
 
     it('get - should throw if circular dependency on self', function () {
         var test = function () {
@@ -277,6 +295,24 @@ describe('container', function () {
 
         assert.strictEqual(result1, result2);
     });
+
+    //--------------------------------------------------------------------------
+    // HELPER METHODS
+    //--------------------------------------------------------------------------
+
+    function getInvalidTypes() {
+        return [
+            undefined,
+            null,
+            true,
+            123,
+            'abc',
+            [],
+            new Object(),
+            Function,
+            ContainerError
+        ];
+    }
 
 });
 
