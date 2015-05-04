@@ -26,6 +26,24 @@ describe('container', function () {
     // CREATE
     //--------------------------------------------------------------------------
 
+    it('create - should throw if type invalid', function () {
+        var invalid = [null, undefined, true, 123, 'abc', [], {}, ContainerError, Function];
+
+        for (var i = 0; i < invalid.length; i++) {
+            var value = invalid[i];
+            var test = function () {
+                try {
+                    _container.create(value);
+                } catch (e) {
+                    assert.match(e.message, /Type \[[\w ]+\] is invalid, because it/i);
+                    throw e;
+                }
+            };
+
+            assert.throws(test, ContainerError);
+        }
+    });
+
     it('create - should create an instance of type', function () {
         var result = _container.create(NoParamConstructor);
 
