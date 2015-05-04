@@ -1,4 +1,4 @@
-/* global assert, Container, ContainerError */
+/* global assert, Container, ContainerError, Function */
 
 "use strict";
 
@@ -27,21 +27,9 @@ describe('container', function () {
     //--------------------------------------------------------------------------
 
     it('create - should throw if type invalid', function () {
-        var invalid = getInvalidTypes();
-
-        for (var i = 0; i < invalid.length; i++) {
-            var type = invalid[i];
-            var test = function () {
-                try {
-                    _container.create(type);
-                } catch (e) {
-                    assert.match(e.message, /Type \[[\w ]+\] is invalid, because it/i);
-                    throw e;
-                }
-            };
-
-            assert.throws(test, ContainerError);
-        }
+        testInvalidTypes(function (type) {
+            _container.create(type);
+        });
     });
 
     it('create - should create an instance of type', function () {
@@ -62,21 +50,9 @@ describe('container', function () {
     //--------------------------------------------------------------------------
 
     it('get - should throw if type invalid', function () {
-        var invalid = getInvalidTypes();
-
-        for (var i = 0; i < invalid.length; i++) {
-            var type = invalid[i];
-            var test = function () {
-                try {
-                    _container.get(type);
-                } catch (e) {
-                    assert.match(e.message, /Type \[[\w ]+\] is invalid, because it/i);
-                    throw e;
-                }
-            };
-
-            assert.throws(test, ContainerError);
-        }
+        testInvalidTypes(function (type) {
+            _container.get(type);
+        });
     });
 
     it('get - should throw if circular dependency on self', function () {
@@ -170,21 +146,9 @@ describe('container', function () {
     //--------------------------------------------------------------------------
 
     it('mapFactory - should throw if type invalid', function () {
-        var invalid = getInvalidTypes();
-
-        for (var i = 0; i < invalid.length; i++) {
-            var type = invalid[i];
-            var test = function () {
-                try {
-                    _container.mapFactory(type, null);
-                } catch (e) {
-                    assert.match(e.message, /Type \[[\w ]+\] is invalid, because it/i);
-                    throw e;
-                }
-            };
-
-            assert.throws(test, ContainerError);
-        }
+        testInvalidTypes(function (type) {
+            _container.mapFactory(type, null);
+        });
     });
 
     it('mapFactory - should throw if a mapping for type already exists', function () {
@@ -235,22 +199,10 @@ describe('container', function () {
     // MAP INSTANCE
     //--------------------------------------------------------------------------
 
-    it('mapType - should throw if type invalid', function () {
-        var invalid = getInvalidTypes();
-
-        for (var i = 0; i < invalid.length; i++) {
-            var type = invalid[i];
-            var test = function () {
-                try {
-                    _container.mapInstance(type, null);
-                } catch (e) {
-                    assert.match(e.message, /Type \[[\w ]+\] is invalid, because it/i);
-                    throw e;
-                }
-            };
-
-            assert.throws(test, ContainerError);
-        }
+    it('mapInstance - should throw if type invalid', function () {
+        testInvalidTypes(function (type) {
+            _container.mapInstance(type, null);
+        });
     });
 
     it('mapInstance - should throw if value not an object', function () {
@@ -291,21 +243,9 @@ describe('container', function () {
     //--------------------------------------------------------------------------
 
     it('mapType - should throw if type invalid', function () {
-        var invalid = getInvalidTypes();
-
-        for (var i = 0; i < invalid.length; i++) {
-            var type = invalid[i];
-            var test = function () {
-                try {
-                    _container.mapType(type, null);
-                } catch (e) {
-                    assert.match(e.message, /Type \[[\w ]+\] is invalid, because it/i);
-                    throw e;
-                }
-            };
-
-            assert.throws(test, ContainerError);
-        }
+        testInvalidTypes(function (type) {
+            _container.mapType(type, null);
+        });
     });
 
     it('mapType - should throw if subType not a function', function () {
@@ -352,6 +292,12 @@ describe('container', function () {
     //--------------------------------------------------------------------------
     // REMOVE
     //--------------------------------------------------------------------------
+
+    it('remove - should throw if invalid type', function () {
+        testInvalidTypes(function (type) {
+            _container.remove(type);
+        });
+    });
 
     it('remove - should throw if container', function () {
         var test = function () {
@@ -444,20 +390,36 @@ describe('container', function () {
     // HELPER METHODS
     //--------------------------------------------------------------------------
 
-    function getInvalidTypes() {
-        return [
-            undefined,
-            null,
-            true,
-            123,
-            'abc',
-            [],
-            new Object(),
-            Function,
-            Error,
-            new Error,
-            ContainerError
-        ];
+    var invalidTypes = [
+        undefined,
+        null,
+        true,
+        123,
+        'abc',
+        [],
+        new Object(),
+        Function,
+        Error,
+        new Error,
+        ContainerError
+    ];
+
+    /**
+     * @param {Function} subject
+     */
+    function testInvalidTypes(subject) {
+        for (var i = 0; i < invalidTypes.length; i++) {
+            var test = function () {
+                try {
+                    subject(invalidTypes[i]);
+                } catch (e) {
+                    assert.match(e.message, /Type \[[\w ]+\] is invalid, because it/i);
+                    throw e;
+                }
+            };
+
+            assert.throws(test, ContainerError);
+        }
     }
 
 });
