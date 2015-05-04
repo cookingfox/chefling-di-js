@@ -148,6 +148,24 @@ describe('container', function () {
     // MAP FACTORY
     //--------------------------------------------------------------------------
 
+    it('mapFactory - should throw if type invalid', function () {
+        var invalid = getInvalidTypes();
+
+        for (var i = 0; i < invalid.length; i++) {
+            var type = invalid[i];
+            var test = function () {
+                try {
+                    _container.mapFactory(type, null);
+                } catch (e) {
+                    assert.match(e.message, /Type \[[\w ]+\] is invalid, because it/i);
+                    throw e;
+                }
+            };
+
+            assert.throws(test, ContainerError);
+        }
+    });
+
     it('mapFactory - should throw if a mapping for type already exists', function () {
         _container.get(NoParamConstructor);
         var factory = function () {
@@ -196,6 +214,32 @@ describe('container', function () {
     // MAP INSTANCE
     //--------------------------------------------------------------------------
 
+    it('mapType - should throw if type invalid', function () {
+        var invalid = getInvalidTypes();
+
+        for (var i = 0; i < invalid.length; i++) {
+            var type = invalid[i];
+            var test = function () {
+                try {
+                    _container.mapInstance(type, null);
+                } catch (e) {
+                    assert.match(e.message, /Type \[[\w ]+\] is invalid, because it/i);
+                    throw e;
+                }
+            };
+
+            assert.throws(test, ContainerError);
+        }
+    });
+
+    it('mapInstance - should throw if value not an object', function () {
+        var test = function () {
+            _container.mapInstance(NoParamConstructor, 123);
+        };
+
+        assert.throws(test, ContainerError);
+    });
+
     it('mapInstance - should throw if a mapping for type already exists', function () {
         _container.get(NoParamConstructor);
         var test = function () {
@@ -224,6 +268,32 @@ describe('container', function () {
     //--------------------------------------------------------------------------
     // MAP TYPE
     //--------------------------------------------------------------------------
+
+    it('mapType - should throw if type invalid', function () {
+        var invalid = getInvalidTypes();
+
+        for (var i = 0; i < invalid.length; i++) {
+            var type = invalid[i];
+            var test = function () {
+                try {
+                    _container.mapType(type, null);
+                } catch (e) {
+                    assert.match(e.message, /Type \[[\w ]+\] is invalid, because it/i);
+                    throw e;
+                }
+            };
+
+            assert.throws(test, ContainerError);
+        }
+    });
+
+    it('mapType - should throw if subType not a function', function () {
+        var test = function () {
+            _container.mapType(Base, null);
+        };
+
+        assert.throws(test, ContainerError);
+    });
 
     it('mapType - should throw if a mapping for type already exists', function () {
         _container.get(Base);
@@ -310,6 +380,7 @@ describe('container', function () {
             [],
             new Object(),
             Function,
+            Error,
             ContainerError
         ];
     }
