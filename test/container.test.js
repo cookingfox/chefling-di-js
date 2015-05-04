@@ -120,6 +120,21 @@ describe('container', function () {
         assert.strictEqual(result2, result1);
     });
 
+    it('get - should return complex mapped types as expected', function () {
+        _container.mapType(D, E);
+        _container.mapType(C, D);
+        _container.mapType(B, C);
+        _container.mapType(A, B);
+        var d = _container.get(D);
+        var c = _container.get(C);
+        var b = _container.get(B);
+        var a = _container.get(A);
+
+        assert.strictEqual(d, c);
+        assert.strictEqual(c, b);
+        assert.strictEqual(b, a);
+    });
+
     //--------------------------------------------------------------------------
     // HAS
     //--------------------------------------------------------------------------
@@ -319,6 +334,15 @@ describe('container', function () {
         assert.instanceOf(result, NoParamConstructor);
     });
 
+    it('mapType - should allow mapping to another mapping', function () {
+        _container.mapType(NoParamConstructor, ExtendedNoParamConstructor);
+        _container.mapType(Base, NoParamConstructor);
+        var result1 = _container.get(NoParamConstructor);
+        var result2 = _container.get(Base);
+
+        assert.strictEqual(result2, result1);
+    });
+
     //--------------------------------------------------------------------------
     // REMOVE
     //--------------------------------------------------------------------------
@@ -337,6 +361,36 @@ describe('container', function () {
         var result = _container.has(NoParamConstructor);
 
         assert.isFalse(result);
+    });
+
+    it('remove - should remove top of complex mapped types when removing top', function () {
+        _container.mapType(D, E);
+        _container.mapType(C, D);
+        _container.mapType(B, C);
+        _container.mapType(A, B);
+
+        _container.remove(A);
+
+        assert.isTrue(_container.has(D), 'has D');
+        assert.isTrue(_container.has(C), 'has C');
+        assert.isTrue(_container.has(B), 'has B');
+        assert.isFalse(_container.has(A), 'NOT has A');
+    });
+
+    it('remove - should remove all of complex mapped types when removing bottom', function () {
+        _container.mapType(D, E);
+        _container.mapType(C, D);
+        _container.mapType(B, C);
+        _container.mapType(A, B);
+
+        console.log('--------------------------------------------------------');
+
+        _container.remove(D);
+
+        assert.isFalse(_container.has(D), 'NOT has D');
+        assert.isFalse(_container.has(C), 'NOT has C');
+        assert.isFalse(_container.has(B), 'NOT has B');
+        assert.isFalse(_container.has(A), 'NOT has A');
     });
 
     //--------------------------------------------------------------------------
@@ -394,12 +448,19 @@ describe('container', function () {
 // base class to test subclassing
 function Base() {
 }
+Base.prototype.name = 'Base';
 
 // class with a constructor without parameters
 function NoParamConstructor() {
 }
 NoParamConstructor.prototype = Object.create(Base.prototype);
-NoParamConstructor.prototype.constructor = NoParamConstructor;
+NoParamConstructor.prototype.name = 'NoParamConstructor';
+
+// extended class to test mapping a type to another mapping
+function ExtendedNoParamConstructor() {
+}
+ExtendedNoParamConstructor.prototype = Object.create(NoParamConstructor.prototype);
+ExtendedNoParamConstructor.prototype.name = 'ExtendedNoParamConstructor';
 
 // class with a constructor that has one parameter
 function OneParamConstructor(NoParamConstructor) {
@@ -426,3 +487,19 @@ function CircularComplexB(CircularComplexC) {
 CircularComplexB.prototype = Object.create(CircularComplexBase.prototype);
 function CircularComplexC(CircularComplexA) {
 }
+
+// extended inheritance tree to test mapping a type to another mapping
+function A() {
+}
+function B() {
+}
+B.prototype = Object.create(A.prototype);
+function C() {
+}
+C.prototype = Object.create(B.prototype);
+function D() {
+}
+D.prototype = Object.create(C.prototype);
+function E() {
+}
+E.prototype = Object.create(D.prototype);
