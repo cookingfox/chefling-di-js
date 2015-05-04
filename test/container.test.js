@@ -117,6 +117,26 @@ describe('container', function () {
         assert.strictEqual(b, a);
     });
 
+    it('get - should return expected for different classes with same name', function () {
+        var result1 = _container.get(A.Foo);
+        var result2 = _container.get(B.Foo);
+
+        assert.notEqual(result2, result1);
+        assert.notStrictEqual(result2, result1);
+    });
+
+    it('get - should return expected for differently mapped classes with same name', function () {
+        var a = new A.Foo();
+        var b = new B.Foo();
+        _container.mapInstance(A.Foo, a);
+        _container.mapInstance(B.Foo, b);
+        var result1 = _container.get(A.Foo);
+        var result2 = _container.get(B.Foo);
+
+        assert.notEqual(result2, result1);
+        assert.notStrictEqual(result2, result1);
+    });
+
     //--------------------------------------------------------------------------
     // HAS
     //--------------------------------------------------------------------------
@@ -486,3 +506,11 @@ D.prototype = Object.create(C.prototype);
 function E() {
 }
 E.prototype = Object.create(D.prototype);
+
+// classes with same name, but different namespace
+A.Foo = function () {
+    this.id = 'A.Foo';
+};
+B.Foo = function () {
+    this.id = 'B.Foo';
+};
