@@ -56,19 +56,15 @@ describe('container', function () {
     });
 
     it('get - should throw if circular dependency on self', function () {
-        var test = function () {
+        throwsContainerError(function () {
             _container.get(CircularSelf);
-        };
-
-        assert.throws(test, ContainerError);
+        });
     });
 
     it('get - should throw if simple A > B > A circular dependency', function () {
-        var test = function () {
+        throwsContainerError(function () {
             _container.get(CircularSimpleA);
-        };
-
-        assert.throws(test, ContainerError);
+        });
     });
 
     it('get - should throw if complex circular dependency with mappings', function () {
@@ -76,11 +72,10 @@ describe('container', function () {
         _container.mapFactory(CircularComplexC, function (container) {
             return new CircularComplexC(container.get(CircularComplexA));
         });
-        var test = function () {
-            _container.get(CircularComplexA);
-        };
 
-        assert.throws(test, ContainerError);
+        throwsContainerError(function () {
+            _container.get(CircularComplexA);
+        });
     });
 
     it('get - should create an instance of type', function () {
@@ -176,19 +171,16 @@ describe('container', function () {
         var factory = function () {
             return new NoParamConstructor();
         };
-        var test = function () {
-            _container.mapFactory(NoParamConstructor, factory);
-        };
 
-        assert.throws(test, ContainerError);
+        throwsContainerError(function () {
+            _container.mapFactory(NoParamConstructor, factory);
+        });
     });
 
     it('mapFactory - should throw if factory not a function', function () {
-        var test = function () {
+        throwsContainerError(function () {
             _container.mapFactory(NoParamConstructor, 123);
-        };
-
-        assert.throws(test, ContainerError);
+        });
     });
 
     it('mapFactory - should use factory to create instance', function () {
@@ -226,28 +218,23 @@ describe('container', function () {
     });
 
     it('mapInstance - should throw if value not an object', function () {
-        var test = function () {
+        throwsContainerError(function () {
             _container.mapInstance(NoParamConstructor, 123);
-        };
-
-        assert.throws(test, ContainerError);
+        });
     });
 
     it('mapInstance - should throw if a mapping for type already exists', function () {
         _container.get(NoParamConstructor);
-        var test = function () {
-            _container.mapInstance(NoParamConstructor, new NoParamConstructor());
-        };
 
-        assert.throws(test, ContainerError);
+        throwsContainerError(function () {
+            _container.mapInstance(NoParamConstructor, new NoParamConstructor());
+        });
     });
 
     it('mapInstance - should throw if not an instance of type', function () {
-        var test = function () {
+        throwsContainerError(function () {
             _container.mapInstance(NoParamConstructor, {});
-        };
-
-        assert.throws(test, ContainerError);
+        });
     });
 
     it('mapInstance - should store specific instance', function () {
@@ -269,28 +256,23 @@ describe('container', function () {
     });
 
     it('mapType - should throw if subType not a function', function () {
-        var test = function () {
+        throwsContainerError(function () {
             _container.mapType(Base, null);
-        };
-
-        assert.throws(test, ContainerError);
+        });
     });
 
     it('mapType - should throw if a mapping for type already exists', function () {
         _container.get(Base);
-        var test = function () {
-            _container.mapType(Base, NoParamConstructor);
-        };
 
-        assert.throws(test, ContainerError);
+        throwsContainerError(function () {
+            _container.mapType(Base, NoParamConstructor);
+        });
     });
 
     it('mapType - should throw if subType does not extend type', function () {
-        var test = function () {
+        throwsContainerError(function () {
             _container.mapType(Base, Object);
-        };
-
-        assert.throws(test, ContainerError);
+        });
     });
 
     it('mapType - should map type to subType', function () {
@@ -320,11 +302,9 @@ describe('container', function () {
     });
 
     it('remove - should throw if container', function () {
-        var test = function () {
+        throwsContainerError(function () {
             _container.remove(Container);
-        };
-
-        assert.throws(test, ContainerError);
+        });
     });
 
     it('remove - should remove the stored instance', function () {
@@ -407,39 +387,37 @@ describe('container', function () {
     });
 
     //--------------------------------------------------------------------------
-    // HELPER METHODS
+    // HELPER VALUES
     //--------------------------------------------------------------------------
 
-    var invalidTypes = [
-        undefined,
-        null,
-        true,
-        123,
-        'abc',
-        [],
-        new Object(),
-        Function,
-        Error,
-        new Error,
-        ContainerError
-    ];
+    var invalidTypes = [undefined, null, true, 123, 'abc', [], new Object(),
+        Function, Error, new Error, ContainerError];
+
+    //--------------------------------------------------------------------------
+    // HELPER METHODS
+    //--------------------------------------------------------------------------
 
     /**
      * @param {Function} subject
      */
     function testInvalidTypes(subject) {
         for (var i = 0; i < invalidTypes.length; i++) {
-            var test = function () {
+            throwsContainerError(function () {
                 try {
                     subject(invalidTypes[i]);
                 } catch (e) {
                     assert.match(e.message, /Type \[[\w ]+\] is invalid, because it/i);
                     throw e;
                 }
-            };
-
-            assert.throws(test, ContainerError);
+            });
         }
+    }
+
+    /**
+     * @param {Function} test
+     */
+    function throwsContainerError(test) {
+        assert.throws(test, ContainerError);
     }
 
 });
