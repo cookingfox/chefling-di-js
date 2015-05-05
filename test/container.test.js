@@ -23,7 +23,7 @@ describe('container', function () {
     });
 
     //--------------------------------------------------------------------------
-    // CREATE
+    // TEST CASES: CREATE
     //--------------------------------------------------------------------------
 
     it('create - should throw if type invalid', function () {
@@ -45,8 +45,54 @@ describe('container', function () {
         assert.instanceOf(result.param, NoParamConstructor);
     });
 
+    it('create - should throw if factory return value is falsy', function () {
+        _container.mapFactory(NoParamConstructor, function () {
+            // don't return anything
+        });
+
+        throwsContainerError(function () {
+            _container.create(NoParamConstructor);
+        });
+    });
+
+    it('create - should throw if factory returns unexpected value', function () {
+        _container.mapFactory(NoParamConstructor, function () {
+            return [1, 2, 3];
+        });
+
+        throwsContainerError(function () {
+            _container.create(NoParamConstructor);
+        });
+    });
+
+    it('create - should call lifecycle create for type', function () {
+        var result = _container.create(LifeCycleWithCallLog);
+
+        assert.isTrue(result.onCreateCalled);
+        assert.isFalse(result.onDestroyCalled);
+    });
+
+    it('create - should call lifecycle create for factory', function () {
+        _container.mapFactory(LifeCycleWithCallLog, function () {
+            return new LifeCycleWithCallLog();
+        });
+        var result = _container.create(LifeCycleWithCallLog);
+
+        assert.isTrue(result.onCreateCalled);
+        assert.isFalse(result.onDestroyCalled);
+    });
+
+    it('create - should call lifecycle create for instance', function () {
+        var instance = new LifeCycleWithCallLog();
+        _container.mapInstance(LifeCycleWithCallLog, instance);
+        _container.create(LifeCycleWithCallLog);
+
+        assert.isTrue(instance.onCreateCalled);
+        assert.isFalse(instance.onDestroyCalled);
+    });
+
     //--------------------------------------------------------------------------
-    // GET
+    // TEST CASES: GET
     //--------------------------------------------------------------------------
 
     it('get - should throw if type invalid', function () {
@@ -133,7 +179,7 @@ describe('container', function () {
     });
 
     //--------------------------------------------------------------------------
-    // HAS
+    // TEST CASES: HAS
     //--------------------------------------------------------------------------
 
     it('has - should return false if no stored value', function () {
@@ -157,7 +203,7 @@ describe('container', function () {
     });
 
     //--------------------------------------------------------------------------
-    // MAP FACTORY
+    // TEST CASES: MAP FACTORY
     //--------------------------------------------------------------------------
 
     it('mapFactory - should throw if type invalid', function () {
@@ -200,6 +246,7 @@ describe('container', function () {
         var c = null;
         var factory = function (container) {
             c = container;
+            return new NoParamConstructor();
         };
         _container.mapFactory(NoParamConstructor, factory);
         _container.get(NoParamConstructor);
@@ -208,7 +255,7 @@ describe('container', function () {
     });
 
     //--------------------------------------------------------------------------
-    // MAP INSTANCE
+    // TEST CASES: MAP INSTANCE
     //--------------------------------------------------------------------------
 
     it('mapInstance - should throw if type invalid', function () {
@@ -246,7 +293,7 @@ describe('container', function () {
     });
 
     //--------------------------------------------------------------------------
-    // MAP TYPE
+    // TEST CASES: MAP TYPE
     //--------------------------------------------------------------------------
 
     it('mapType - should throw if type invalid', function () {
@@ -292,7 +339,7 @@ describe('container', function () {
     });
 
     //--------------------------------------------------------------------------
-    // REMOVE
+    // TEST CASES: REMOVE
     //--------------------------------------------------------------------------
 
     it('remove - should throw if invalid type', function () {
@@ -351,8 +398,16 @@ describe('container', function () {
         assert.isFalse(_container.has(A), 'NOT has A');
     });
 
+    it('remove - should call lifecycle destroy', function () {
+        var result = _container.get(LifeCycleWithCallLog);
+        _container.remove(LifeCycleWithCallLog);
+
+        assert.isTrue(result.onCreateCalled);
+        assert.isTrue(result.onDestroyCalled);
+    });
+
     //--------------------------------------------------------------------------
-    // RESET
+    // TEST CASES: RESET
     //--------------------------------------------------------------------------
 
     it('reset - should remove all stored values', function () {
@@ -375,8 +430,16 @@ describe('container', function () {
         assert.strictEqual(result, _container);
     });
 
+    it('reset - should call lifecycle destroy', function () {
+        var result = _container.get(LifeCycleWithCallLog);
+        _container.reset();
+
+        assert.isTrue(result.onCreateCalled);
+        assert.isTrue(result.onDestroyCalled);
+    });
+
     //--------------------------------------------------------------------------
-    // GET DEFAULT
+    // TEST CASES: GET DEFAULT
     //--------------------------------------------------------------------------
 
     it('getDefault - should return same instance', function () {
@@ -391,7 +454,7 @@ describe('container', function () {
     //--------------------------------------------------------------------------
 
     var invalidTypes = [undefined, null, true, 123, 'abc', [], new Object(),
-        Function, Error, new Error, ContainerError];
+        Function, Error, new Error, ContainerError, Container, new Container];
 
     //--------------------------------------------------------------------------
     // HELPER METHODS
@@ -399,12 +462,19 @@ describe('container', function () {
 
     /**
      * @param {Function} subject
+     * @param {Boolean} testContainer Should we also test for the Container type?
      */
-    function testInvalidTypes(subject) {
+    function testInvalidTypes(subject, testContainer) {
         for (var i = 0; i < invalidTypes.length; i++) {
+            var type = invalidTypes[i];
+
+            if (!testContainer && (type === Container || type instanceof Container)) {
+                continue;
+            }
+
             throwsContainerError(function () {
                 try {
-                    subject(invalidTypes[i]);
+                    subject(type);
                 } catch (e) {
                     assert.match(e.message, /Type \[[\w ]+\] is invalid, because it/i);
                     throw e;
@@ -487,8 +557,21 @@ E.prototype = Object.create(D.prototype);
 
 // classes with same name, but different namespace
 A.Foo = function () {
-    this.id = 'A.Foo';
 };
 B.Foo = function () {
-    this.id = 'B.Foo';
 };
+
+// lifecycle with log
+function LifeCycleWithCallLog() {
+    var _self = this;
+    this.onCreateCalled = false;
+    this.onDestroyCalled = false;
+
+    this.onCreate = function () {
+        _self.onCreateCalled = true;
+    };
+
+    this.onDestroy = function () {
+        _self.onDestroyCalled = true;
+    };
+}

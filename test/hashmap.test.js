@@ -71,6 +71,20 @@ describe('hashmap', function () {
     });
 
     //--------------------------------------------------------------------------
+    // TEST CASES: GET VALUES
+    //--------------------------------------------------------------------------
+
+    it('getValues - should return all values', function () {
+        var value1 = {};
+        var value2 = {};
+        _hashMap.set({}, value1);
+        _hashMap.set({}, value2);
+        var result = _hashMap.getValues();
+
+        assert.deepEqual(result, [value1, value2]);
+    });
+
+    //--------------------------------------------------------------------------
     // TEST CASES: HAS
     //--------------------------------------------------------------------------
 
