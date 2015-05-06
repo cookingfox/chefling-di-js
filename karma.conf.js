@@ -6,7 +6,7 @@ module.exports = function (config) {
     config.set({
         basePath: '',
         // `phantomjs-shim` does have support for Function.prototype.bind
-        frameworks: ['mocha', 'chai', 'phantomjs-shim'],
+        frameworks: ['chai', 'mocha', 'phantomjs-shim'],
         files: [
             'src/**/*.js',
             'test/**/*.test.js'
@@ -20,7 +20,12 @@ module.exports = function (config) {
         colors: true,
         logLevel: config.LOG_INFO,
         autoWatch: true,
-        browsers: ['Chrome', 'PhantomJS'],
+        browsers: [
+            // 'Chrome',
+            // 'Firefox',
+            // 'Safari',
+            'PhantomJS'
+        ],
         singleRun: false
     });
 };

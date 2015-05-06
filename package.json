@@ -2,33 +2,35 @@
     "name": "chefling-di-js",
     "version": "0.1.0",
     "description": "Chefling is a dependency injection container for JavaScript.",
-    "scripts": {
-        "test": "./node_modules/karma/bin/karma start --single-run --browsers PhantomJS"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/cookingfox/chefling-di-js.git"
-    },
+    "author": "Cooking Fox",
+    "license": "Apache 2.0",
+    "homepage": "https://github.com/cookingfox/chefling-di-js",
     "keywords": [
         "dependency",
         "injection",
         "container",
         "reflection"
     ],
-    "author": "Cooking Fox",
-    "license": "Apache 2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/cookingfox/chefling-di-js.git"
+    },
     "bugs": {
         "url": "https://github.com/cookingfox/chefling-di-js/issues"
     },
-    "homepage": "https://github.com/cookingfox/chefling-di-js",
+    "scripts": {
+        "test": "./node_modules/karma/bin/karma start --single-run --browsers PhantomJS"
+    },
     "devDependencies": {
         "chai": "^2.3.0",
         "karma": "^0.12.31",
         "karma-chai": "^0.1.0",
         "karma-chrome-launcher": "^0.1.8",
+        "karma-firefox-launcher": "^0.1.4",
         "karma-mocha": "^0.1.10",
         "karma-phantomjs-launcher": "^0.1.4",
         "karma-phantomjs-shim": "^1.0.0",
+        "karma-safari-launcher": "^0.1.1",
         "mocha": "^2.2.4"
     }
 }
