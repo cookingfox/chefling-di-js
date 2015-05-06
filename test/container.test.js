@@ -65,6 +65,16 @@ describe('container', function () {
         });
     });
 
+    it('create - should return complex mapped types as expected', function () {
+        _container.mapType(D, E);
+        _container.mapType(C, D);
+        _container.mapType(B, C);
+        _container.mapType(A, B);
+        var result = _container.create(A);
+
+        assert.instanceOf(result, E);
+    });
+
     it('create - should call lifecycle create for type', function () {
         var result = _container.create(LifeCycleWithCallLog);
 
@@ -292,6 +302,14 @@ describe('container', function () {
         assert.strictEqual(result, instance);
     });
 
+    it('mapInstance - should accept implementation', function () {
+        var instance = new NoParamConstructor();
+        _container.mapInstance(Base, instance);
+        var result = _container.get(Base);
+
+        assert.strictEqual(result, instance);
+    });
+
     //--------------------------------------------------------------------------
     // TEST CASES: MAP TYPE
     //--------------------------------------------------------------------------
@@ -319,6 +337,12 @@ describe('container', function () {
     it('mapType - should throw if subType does not extend type', function () {
         throwsContainerError(function () {
             _container.mapType(Base, Object);
+        });
+    });
+
+    it('mapType - should throw if subType same as type', function () {
+        throwsContainerError(function () {
+            _container.mapType(Base, Base);
         });
     });
 
