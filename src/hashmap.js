@@ -1,5 +1,9 @@
 "use strict";
 
+/**
+ * A key - value map implementation. This, in contrast to Object, allows the key
+ * to be any value, such as objects.
+ */
 function HashMap() {
 
     //--------------------------------------------------------------------------
@@ -14,6 +18,8 @@ function HashMap() {
     //--------------------------------------------------------------------------
 
     /**
+     * Returns the stored value for `key`.
+     *
      * @param {*} key
      * @returns {*}
      */
@@ -22,13 +28,15 @@ function HashMap() {
     };
 
     /**
+     * Returns all the keys for `value`.
+     *
      * @param {*} value
      * @returns {Array}
      */
     this.getKeysForValue = function (value) {
-        var keys = [];
+        var i, len, keys = [];
 
-        for (var i = 0, len = _values.length; i < len; ++i) {
+        for (i = 0, len = _values.length; i < len; ++i) {
             if (_values[i] === value) {
                 keys.push(_keys[i]);
             }
@@ -38,6 +46,8 @@ function HashMap() {
     };
 
     /**
+     * Returns all values.
+     *
      * @returns {Array}
      */
     this.getValues = function () {
@@ -45,6 +55,8 @@ function HashMap() {
     };
 
     /**
+     * Returns whether a value for this key exists.
+     *
      * @param {*} key
      * @returns {Boolean}
      */
@@ -53,6 +65,8 @@ function HashMap() {
     };
 
     /**
+     * Removes the key and value for this key.
+     *
      * @param {*} key
      */
     this.remove = function (key) {
@@ -62,6 +76,9 @@ function HashMap() {
     };
 
     /**
+     * Stores the value for this key. If a value for key already exists, it will
+     * be overwritten.
+     *
      * @param {*} key
      * @param {*} value
      */
@@ -82,11 +99,15 @@ function HashMap() {
     //--------------------------------------------------------------------------
 
     /**
+     * Returns the array index for this key.
+     *
      * @param {*} key
      * @returns {Number}
      */
     function indexOf(key) {
-        for (var i = 0, len = _keys.length; i < len; ++i) {
+        var i, len;
+
+        for (i = 0, len = _keys.length; i < len; ++i) {
             if (_keys[i] === key) {
                 return i;
             }
