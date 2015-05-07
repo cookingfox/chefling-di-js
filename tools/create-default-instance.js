@@ -1,6 +1,6 @@
 /**
  * Creates a default instance, so it can be returned.
  *
- * @version 0.1.1
+ * @version 0.2.0
  */
 var chefling = Container.getDefault();

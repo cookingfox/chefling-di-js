@@ -20,7 +20,7 @@
  * A key - value map implementation. This, in contrast to Object, allows the key
  * to be any value, such as objects.
  *
- * @version 0.1.0
+ * @version 0.2.0
  */
 function HashMap() {
 
@@ -143,7 +143,7 @@ function HashMap() {
  * (objects). It resolves a type's full dependency tree using constructor
  * injection.
  *
- * @version 0.1.0
+ * @version 0.2.0
  */
 function Container() {
 
@@ -681,7 +681,7 @@ ContainerError.prototype.name = 'ContainerError';
 /**
  * Creates a default instance, so it can be returned.
  *
- * @version 0.1.0
+ * @version 0.2.0
  */
 var chefling = Container.getDefault();
 
