@@ -1,6 +1,6 @@
 {
   "name": "chefling",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Chefling is a dependency injection container for JavaScript.",
   "author": "Cooking Fox",
   "license": "Apache 2.0",

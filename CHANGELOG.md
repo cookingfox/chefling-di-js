@@ -1,5 +1,10 @@
 # Chefling DI for JavaScript: Change Log
 
+## [0.3.0](../../tree/v0.3.0) (2015-05-07)
+
+- Introduces `Container.setLoader()`, a wrapper for a dependency loader such as
+Node's / RequireJS's `require`.
+
 ## [0.2.0](../../tree/v0.2.0) (2015-05-07)
 
 - Renames bower & npm package to just "chefling".
