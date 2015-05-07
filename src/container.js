@@ -6,6 +6,8 @@
  * A dependency injection container that maps types (functions) to instances
  * (objects). It resolves a type's full dependency tree using constructor
  * injection.
+ *
+ * @version 0.1.0
  */
 function Container() {
 

@@ -1,8 +1,5 @@
 module.exports = function (grunt) {
 
-    // load package.json values
-    var pkg = grunt.file.readJSON('package.json');
-
     grunt.initConfig({
         //----------------------------------------------------------------------
         // CONFIG: VARIABLES
@@ -17,8 +14,6 @@ module.exports = function (grunt) {
             build: './build',
             dist: './dist'
         },
-        // package
-        pkg: pkg,
         //----------------------------------------------------------------------
         // CONFIG: TASKS
         //----------------------------------------------------------------------
@@ -31,26 +26,28 @@ module.exports = function (grunt) {
         // combine source files
         concat: {
             target: {
-                src: ['./src/hashmap.js', './src/container.js'],
-                dest: '<%=paths.build%>/<%=keys.name%>.js'
+                src: [
+                    './src/hashmap.js',
+                    './src/container.js',
+                    './tools/create-default-instance.js'
+                ],
+                dest: '<%=paths.build%>/<%=keys.name%>.concat.js'
             }
         },
         // add UMD wrapper
         umd: {
             main: {
                 src: '<%=concat.target.dest%>',
-                dest: '<%=paths.build%>/<%=keys.name%>.umd.js',
-                objectToExport: 'Container',
-                globalAlias: 'Container',
+                dest: '<%=paths.build%>/<%=keys.name%>.js',
+                objectToExport: 'chefling',
+                globalAlias: '<%=keys.name%>',
                 indent: 4
             }
         },
         // minify code
         uglify: {
             options: {
-                mangle: {
-                    except: ['Container', 'HashMap']
-                }
+                mangle: false
             },
             build: {
                 src: '<%=umd.main.dest%>',
@@ -63,11 +60,11 @@ module.exports = function (grunt) {
                 files: [
                     {
                         src: '<%=umd.main.dest%>',
-                        dest: '<%=paths.dist%>/<%=keys.name%>-' + pkg.version + '.js'
+                        dest: '<%=paths.dist%>/<%=keys.name%>.js'
                     },
                     {
                         src: '<%=uglify.build.dest%>',
-                        dest: '<%=paths.dist%>/<%=keys.name%>-' + pkg.version + '.min.js'
+                        dest: '<%=paths.dist%>/<%=keys.name%>.min.js'
                     }
                 ]
             }
@@ -83,6 +80,12 @@ module.exports = function (grunt) {
                     replace: '\\d+(\\.\\d+){2}'
                 },
                 src: ['README.md']
+            },
+            source: {
+                options: {
+                    prefix: '@version\\s*'
+                },
+                src: ['src/*.js', 'tools/*.js']
             }
         }
     });
