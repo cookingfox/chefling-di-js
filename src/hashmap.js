@@ -4,7 +4,7 @@
  * A key - value map implementation. This, in contrast to Object, allows the key
  * to be any value, such as objects.
  *
- * @version 0.1.0
+ * @version 0.1.1
  */
 function HashMap() {
 
