@@ -39,5 +39,12 @@
     "karma-phantomjs-shim": "^1.0.0",
     "karma-safari-launcher": "^0.1.1",
     "mocha": "^2.2.4"
-  }
+  },
+  "files": [
+    "dist",
+    "src",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ]
 }
