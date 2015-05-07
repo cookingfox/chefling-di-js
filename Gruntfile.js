@@ -74,7 +74,16 @@ module.exports = function (grunt) {
         },
         // manage versioning
         version: {
-            src: ['package.json', 'bower.json']
+            defaults: {
+                src: ['package.json', 'bower.json']
+            },
+            readme: {
+                options: {
+                    prefix: '[a-z]+\\-v',
+                    replace: '\\d+(\\.\\d+){2}'
+                },
+                src: ['README.md']
+            }
         }
     });
 
