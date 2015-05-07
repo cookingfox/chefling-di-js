@@ -53,6 +53,14 @@ function Container() {
     var _instances;
 
     /**
+     * A function that can be asked to load a dependency, such as Node's
+     * `require`. It should accept one parameter: the dependency name.
+     *
+     * @type Function
+     */
+    var _loader;
+
+    /**
      * Stores type mappings, where the key is the type and the value is the
      * mapping provided by the `map...` methods.
      *
@@ -306,6 +314,24 @@ function Container() {
         initialize();
     };
 
+    /**
+     * Set a "loader" function, which is used to load a dependency during the
+     * `create()` sequence. Examples are Node's and requirejs's `require`
+     * method. It should accept one parameter: the dependency name. When the
+     * loader function throws an exception, a ContainerError will be thrown.
+     *
+     * @param {Function} loader The function that is used to load the
+     * dependency.
+     * @throws {ContainerError} When `loader` is not a function.
+     */
+    this.setLoader = function (loader) {
+        if (!isFunction(loader)) {
+            throw new ContainerError('Loader is not a function');
+        }
+
+        _loader = loader;
+    };
+
     //--------------------------------------------------------------------------
     // PRIVATE METHODS
     //--------------------------------------------------------------------------
@@ -419,11 +445,28 @@ function Container() {
             return value;
         }
 
-        // is `value` the name of a function? return the function
+        // is `value` the name of a function?
+        if (typeof value !== 'string') {
+            throw new ContainerError('Value is not a function and not a ' +
+                    'string, aka the name of the function');
+        }
+
+        // is `value` the name of a globally defined function?
         if (isFunction(window[value])) {
             return window[value];
         }
 
+        // use loader to attempt to load the type
+        if (_loader) {
+            try {
+                return _loader(value);
+            } catch (e) {
+                throw new ContainerError('Loader error: ' +
+                        (e instanceof Error ? e.message : e));
+            }
+        }
+
+        // @todo Hint at `setLoader` option
         throw new ContainerError('Value \'' + value + '\' (' + typeof value +
                 ') is not a function');
     }

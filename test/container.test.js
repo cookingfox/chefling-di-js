@@ -101,6 +101,34 @@ describe('container', function () {
         assert.isFalse(instance.onDestroyCalled);
     });
 
+    it('create - should use loader to load type', function () {
+        // mock dependency
+        var dependency = function () {
+        };
+
+        var calledName = null;
+        var loader = function (name) {
+            calledName = name;
+            return dependency;
+        };
+        _container.setLoader(loader);
+        var result = _container.create(OneUndefinedDependency);
+
+        assert.equal(calledName, OneUndefinedDependency.prototype.dependencyName);
+        assert.instanceOf(result, OneUndefinedDependency);
+        assert.instanceOf(result.dependency, dependency);
+    });
+
+    it('create - should throw if loader throws', function () {
+        _container.setLoader(function () {
+            throw new Error('This is a fake error from the loader');
+        });
+
+        throwsContainerError(function () {
+            _container.create(OneUndefinedDependency);
+        });
+    });
+
     //--------------------------------------------------------------------------
     // TEST CASES: GET
     //--------------------------------------------------------------------------
@@ -463,6 +491,30 @@ describe('container', function () {
     });
 
     //--------------------------------------------------------------------------
+    // TEST CASES: SET LOADER
+    //--------------------------------------------------------------------------
+
+    it('setLoader - should throw if not a valid function', function () {
+        throwsContainerError(function () {
+            _container.setLoader(null);
+        });
+        throwsContainerError(function () {
+            _container.setLoader('assert');
+        });
+    });
+
+    it('setLoader - should accept function', function () {
+        var loader = function () {
+        };
+
+        var test = function () {
+            _container.setLoader(loader);
+        };
+
+        assert.doesNotThrow(test, ContainerError);
+    });
+
+    //--------------------------------------------------------------------------
     // TEST CASES: GET DEFAULT
     //--------------------------------------------------------------------------
 
@@ -536,6 +588,12 @@ function ExtendedNoParamConstructor() {
 }
 ExtendedNoParamConstructor.prototype = Object.create(NoParamConstructor.prototype);
 ExtendedNoParamConstructor.prototype.name = 'ExtendedNoParamConstructor';
+
+// type that depends on non-existing dependency
+function OneUndefinedDependency(UndefinedDependency) {
+    this.dependency = UndefinedDependency;
+}
+OneUndefinedDependency.prototype.dependencyName = 'UndefinedDependency';
 
 // class with a constructor that has one parameter
 function OneParamConstructor(NoParamConstructor) {
