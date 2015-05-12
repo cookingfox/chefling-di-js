@@ -1,5 +1,9 @@
 # Chefling DI for JavaScript: Change Log
 
+## [0.3.1](../../tree/v0.3.1) (2015-05-12)
+
+- Fix: When asked for a "Container", supply the current instance.
+
 ## [0.3.0](../../tree/v0.3.0) (2015-05-07)
 
 - Introduces `Container.setLoader()`, a wrapper for a dependency loader such as
