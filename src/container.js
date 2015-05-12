@@ -388,8 +388,17 @@ function Container() {
 
         // gather all values to pass to the constructor
         for (i = 0, len = params.length; i < len; ++i) {
-            param = asFunction(params[i]);
-            instance = _self.get(param);
+            var paramName = params[i];
+
+            if (paramName === Container.name) {
+                // name is "Container": use this instance
+                instance = _self;
+            } else {
+                // convert name to function
+                param = asFunction(paramName);
+                instance = _self.get(param);
+            }
+
             args.push(instance);
         }
 

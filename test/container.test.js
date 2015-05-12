@@ -129,6 +129,13 @@ describe('container', function () {
         });
     });
 
+    it('create - should be able to resolve container dependency', function () {
+        var result = _container.create(DependsOnContainer);
+
+        assert.instanceOf(result, DependsOnContainer);
+        assert.strictEqual(result.container, _container);
+    });
+
     //--------------------------------------------------------------------------
     // TEST CASES: GET
     //--------------------------------------------------------------------------
@@ -598,6 +605,11 @@ OneUndefinedDependency.prototype.dependencyName = 'UndefinedDependency';
 // class with a constructor that has one parameter
 function OneParamConstructor(NoParamConstructor) {
     this.param = NoParamConstructor;
+}
+
+// class with a dependency on the container
+function DependsOnContainer(Container) {
+    this.container = Container;
 }
 
 // class with a circular dependency on itself
