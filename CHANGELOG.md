@@ -1,5 +1,10 @@
 # Chefling DI for JavaScript: Change Log
 
+## [0.3.2](../../tree/v0.3.2) (2015-05-18)
+
+- Distribution module (`/dist/chefling.js`) now returns Container function. This
+allows for more flexible usage of the library.
+
 ## [0.3.1](../../tree/v0.3.1) (2015-05-12)
 
 - Fix: When asked for a "Container", supply the current instance.

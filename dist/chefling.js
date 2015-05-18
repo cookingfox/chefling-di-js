@@ -2,7 +2,7 @@
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module unless amdModuleId is set
     define([], function () {
-      return (root['chefling'] = factory());
+      return (root['Container'] = factory());
     });
   } else if (typeof exports === 'object') {
     // Node. Does not work with strict CommonJS, but
@@ -10,7 +10,7 @@
     // like Node.
     module.exports = factory();
   } else {
-    root['chefling'] = factory();
+    root['Container'] = factory();
   }
 }(this, function () {
 
@@ -20,7 +20,7 @@
  * A key - value map implementation. This, in contrast to Object, allows the key
  * to be any value, such as objects.
  *
- * @version 0.3.0
+ * @version 0.3.2
  */
 function HashMap() {
 
@@ -143,7 +143,7 @@ function HashMap() {
  * (objects). It resolves a type's full dependency tree using constructor
  * injection.
  *
- * @version 0.3.0
+ * @version 0.3.2
  */
 function Container() {
 
@@ -730,13 +730,6 @@ function ContainerError(message) {
 ContainerError.prototype = Object.create(Error.prototype);
 ContainerError.prototype.name = 'ContainerError';
 
-/**
- * Creates a default instance, so it can be returned.
- *
- * @version 0.3.0
- */
-var chefling = Container.getDefault();
-
-return chefling;
+return Container;
 
 }));

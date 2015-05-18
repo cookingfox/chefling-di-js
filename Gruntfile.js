@@ -28,8 +28,7 @@ module.exports = function (grunt) {
             target: {
                 src: [
                     './src/hashmap.js',
-                    './src/container.js',
-                    './tools/create-default-instance.js'
+                    './src/container.js'
                 ],
                 dest: '<%=paths.build%>/<%=keys.name%>.concat.js'
             }
@@ -39,8 +38,8 @@ module.exports = function (grunt) {
             main: {
                 src: '<%=concat.target.dest%>',
                 dest: '<%=paths.build%>/<%=keys.name%>.js',
-                objectToExport: 'chefling',
-                globalAlias: '<%=keys.name%>',
+                objectToExport: 'Container',
+                globalAlias: 'Container',
                 indent: 4
             }
         },
@@ -85,7 +84,7 @@ module.exports = function (grunt) {
                 options: {
                     prefix: '@version\\s*'
                 },
-                src: ['src/*.js', 'tools/*.js']
+                src: ['src/*.js']
             }
         }
     });
