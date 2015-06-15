@@ -1,5 +1,9 @@
 # Chefling DI for JavaScript: Change Log
 
+## [0.3.3](../../tree/v0.3.3) (2015-06-15)
+
+- Fix: Check whether 'window' exists before using it.
+
 ## [0.3.2](../../tree/v0.3.2) (2015-05-18)
 
 - Distribution module (`/dist/chefling.js`) now returns Container function. This
