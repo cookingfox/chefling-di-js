@@ -1,5 +1,10 @@
 # Chefling DI for JavaScript: Change Log
 
+## [0.3.4](../../tree/v0.3.4) (2015-06-15)
+
+- Fix: Uses correct global 'namespace' object - `window` for browsers, `global`
+for Node.
+
 ## [0.3.3](../../tree/v0.3.3) (2015-06-15)
 
 - Fix: Check whether 'window' exists before using it.

@@ -20,7 +20,7 @@
  * A key - value map implementation. This, in contrast to Object, allows the key
  * to be any value, such as objects.
  *
- * @version 0.3.3
+ * @version 0.3.4
  */
 function HashMap() {
 
@@ -143,7 +143,7 @@ function HashMap() {
  * (objects). It resolves a type's full dependency tree using constructor
  * injection.
  *
- * @version 0.3.3
+ * @version 0.3.4
  */
 function Container() {
 
@@ -178,6 +178,14 @@ function Container() {
      * @type Array
      */
     var _currentlyResolving;
+
+    /**
+     * Reference to the global 'namespace' object, which is `window` for
+     * browsers and `global` for Node.
+     *
+     * @type Object
+     */
+    var _globalNamespace;
 
     /**
      * Stores created instances, where the key is the type (Function) and the
@@ -597,8 +605,10 @@ function Container() {
         }
 
         // is `value` the name of a globally defined function?
-        if (window && isFunction(window[value])) {
-            return window[value];
+        var global = getGlobalNamespace();
+
+        if (isFunction(global[value])) {
+            return global[value];
         }
 
         // use loader to attempt to load the type
@@ -614,6 +624,27 @@ function Container() {
         // @todo Hint at `setLoader` option
         throw new ContainerError('Value \'' + value + '\' (' + typeof value +
                 ') is not a function');
+    }
+
+    /**
+     * Returns to the global 'namespace' object, which is `window` for browsers
+     * and `global` for Node.
+     *
+     * @returns {Object}
+     * @throws {Error} When global object cannot be defined
+     */
+    function getGlobalNamespace() {
+        if (!_globalNamespace) {
+            if (typeof window !== 'undefined') {
+                _globalNamespace = window;
+            } else if (typeof global !== 'undefined') {
+                _globalNamespace = global;
+            } else {
+                throw new Error('Could not define global namespace object');
+            }
+        }
+
+        return _globalNamespace;
     }
 
     /**
