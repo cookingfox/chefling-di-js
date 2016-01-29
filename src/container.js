@@ -7,7 +7,7 @@
  * (objects). It resolves a type's full dependency tree using constructor
  * injection.
  *
- * @version 0.3.4
+ * @version 0.3.5
  */
 function Container() {
 

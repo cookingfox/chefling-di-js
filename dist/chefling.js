@@ -20,7 +20,7 @@
  * A key - value map implementation. This, in contrast to Object, allows the key
  * to be any value, such as objects.
  *
- * @version 0.3.4
+ * @version 0.3.5
  */
 function HashMap() {
 
@@ -143,7 +143,7 @@ function HashMap() {
  * (objects). It resolves a type's full dependency tree using constructor
  * injection.
  *
- * @version 0.3.4
+ * @version 0.3.5
  */
 function Container() {
 
